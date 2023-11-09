@@ -1,16 +1,13 @@
-from typing import Any
-from django.db import models
-from django.db.models.query import QuerySet
-
 from django.utils import timezone
 from django.db.models import Count
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse
+from django.views.generic import (ListView, DetailView,
+                                  CreateView, UpdateView, DeleteView)
 
 from .models import Post, Category, Comment
 from .forms import PostForm, CommentForm, UserForm
@@ -33,7 +30,7 @@ def get_post_qs():
 class PostsListView(ListView):
     model = Post
     template_name = 'blog/index.html'
-    paginate_by = 10
+    paginate_by = POSTS_LIMIT
     ordering = '-pub_date'
     queryset = Post.objects.select_related(
         'category',
@@ -49,7 +46,7 @@ class PostsListView(ListView):
 class CategoryPostListView(ListView):
     model = Post
     template_name = 'blog/category.html'
-    paginate_by = 10
+    paginate_by = POSTS_LIMIT
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -105,7 +102,7 @@ class AuthorProfileView(ListView):
     template_name = 'blog/profile.html'
     slug_field = 'username'
     slug_url_kwarg = 'username'
-    paginate_by = 10
+    paginate_by = POSTS_LIMIT
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
