@@ -1,3 +1,5 @@
+from typing import Any
+from django.db import models
 from django.utils import timezone
 from django.db.models import Count
 from django.contrib.auth import get_user_model
@@ -165,33 +167,16 @@ class EditPostView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/create.html'
-    slug_field = 'post_id'
     pk_url_kwarg = 'post_id'
 
     def dispatch(self, request, *args, **kwargs):
         instance = get_object_or_404(Post, pk=kwargs['post_id'])
         if instance.author != request.user:
-            return reverse(
+            return redirect(
                 'blog:post_detail',
-                kwargs={
-                    'post_id': self.kwargs['post_id']
-                }
+                post_id=self.kwargs['post_id']
             )
         return super().dispatch(request, *args, **kwargs)
-
-    def get_object(self):
-        instance = get_object_or_404(
-            Post,
-            pk=self.kwargs['post_id']
-        )
-        if instance.author != self.request.user:
-            instance = get_object_or_404(
-                Post,
-                pk=self.kwargs['post_id'],
-                is_published=True,
-                category__is_published=True
-            )
-        return instance
 
     def get_success_url(self):
         return reverse(
@@ -234,17 +219,21 @@ class DeletePostView(LoginRequiredMixin, DeleteView):
     pk_url_kwarg = 'post_id'
     success_url = reverse_lazy('blog:index')
 
+    def get_object(self):
+        return get_object_or_404(
+            Post,
+            pk=self.kwargs['post_id']
+        )
+
     def dispatch(self, request, *args, **kwargs):
         instance = get_object_or_404(
             Post,
             pk=kwargs['post_id']
         )
         if instance.author != request.user:
-            return reverse(
+            return redirect(
                 'blog:post_detail',
-                kwargs={
-                    'post_id': self.kwargs['post_id']
-                }
+                post_id=self.kwargs['post_id']
             )
         return super().dispatch(request, *args, **kwargs)
 
