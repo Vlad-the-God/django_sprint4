@@ -20,6 +20,10 @@ class PostAdmin(admin.ModelAdmin):
         'location',
         'category',
     )
+    list_display_links = (
+        'title',
+        'text',
+    )
 
 
 @admin.register(Location)
@@ -40,6 +44,10 @@ class CategoryAdmin(admin.ModelAdmin):
         'title',
         'description',
         'is_published',
+    )
+    list_display_links = (
+        'title',
+        'description',
     )
     list_editable = (
         'is_published',
