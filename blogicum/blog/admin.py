@@ -58,4 +58,6 @@ class CategoryAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = (
         'text',
+        'author',
+        'post',
     )

@@ -1,7 +1,7 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
-from blog.constants import CHAR_LIMIT
+from blog.constants import CHAR_LIMIT, CHAR_VIEW_LIMIT
 from core.models import PublishedCreatedModel
 
 
@@ -28,7 +28,7 @@ class Category(PublishedCreatedModel):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return self.title[:25]
+        return self.title[:CHAR_VIEW_LIMIT]
 
 
 class Location(PublishedCreatedModel):
@@ -42,7 +42,7 @@ class Location(PublishedCreatedModel):
         verbose_name_plural = 'Местоположения'
 
     def __str__(self):
-        return self.name[:25]
+        return self.name[:CHAR_VIEW_LIMIT]
 
 
 class Post(PublishedCreatedModel):
@@ -89,7 +89,7 @@ class Post(PublishedCreatedModel):
         ordering = ('-pub_date',)
 
     def __str__(self):
-        return self.title[:25]
+        return self.title[:CHAR_VIEW_LIMIT]
 
 
 class Comment(PublishedCreatedModel):
@@ -112,4 +112,4 @@ class Comment(PublishedCreatedModel):
         ordering = ('created_at',)
 
     def __str__(self):
-        return self.text[:25]
+        return f'{self.text[:CHAR_VIEW_LIMIT]} {self.author} {self.post}'

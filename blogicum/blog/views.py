@@ -1,7 +1,7 @@
-from django.db.models import Count
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -11,7 +11,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView,
 from blog.constants import POSTS_LIMIT
 from blog.forms import CommentForm, PostForm, UserForm
 from blog.mixins import CommentAccessMixin, PostMixin, PostAccessMixin
-from blog.models import Category, Comment, Post
+from blog.models import Category, Post
 from blog.utils import get_post_qs
 
 
@@ -22,9 +22,7 @@ class PostsListView(ListView):
     model = Post
     template_name = 'blog/index.html'
     paginate_by = POSTS_LIMIT
-    queryset = get_post_qs().order_by(
-        '-pub_date'
-    ).annotate(comment_count=Count('comments'))
+    queryset = get_post_qs().annotate(comment_count=Count('comments'))
 
 
 class CategoryPostListView(ListView):
@@ -112,8 +110,7 @@ class AuthorProfileView(ListView):
         ).order_by('-pub_date').annotate(comment_count=Count('comments'))
 
 
-class PostCreateView(PostMixin, LoginRequiredMixin, CreateView):
-    template_name = 'blog/create.html'
+class PostCreateView(LoginRequiredMixin, PostMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -145,8 +142,7 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
         )
 
 
-class EditPostView(PostAccessMixin, PostMixin, LoginRequiredMixin, UpdateView):
-    template_name = 'blog/create.html'
+class EditPostView(PostAccessMixin, LoginRequiredMixin, PostMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
@@ -157,17 +153,13 @@ class EditPostView(PostAccessMixin, PostMixin, LoginRequiredMixin, UpdateView):
         )
 
 
-class EditCommentView(CommentAccessMixin, LoginRequiredMixin, UpdateView):
-    model = Comment
+class EditCommentView(LoginRequiredMixin, CommentAccessMixin, UpdateView):
     form_class = CommentForm
     template_name = 'blog/create.html'
-    slug_field = 'comment_id'
-    pk_url_kwarg = 'comment_id'
 
 
-class DeletePostView(PostAccessMixin, PostMixin,
-                     LoginRequiredMixin, DeleteView):
-    template_name = 'blog/create.html'
+class DeletePostView(LoginRequiredMixin, PostAccessMixin,
+                     PostMixin, DeleteView):
     success_url = reverse_lazy('blog:index')
 
     def get_context_data(self, **kwargs):
@@ -176,10 +168,8 @@ class DeletePostView(PostAccessMixin, PostMixin,
         return context
 
 
-class DeleteCommentView(CommentAccessMixin, LoginRequiredMixin, DeleteView):
-    model = Comment
+class DeleteCommentView(LoginRequiredMixin, CommentAccessMixin, DeleteView):
     template_name = 'blog/comment.html'
-    pk_url_kwarg = 'comment_id'
 
 
 @login_required

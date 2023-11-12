@@ -1,17 +1,18 @@
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from blog.models import Post
+from blog.models import Comment, Post
 from blog.forms import PostForm
 
 
-class PostMixin():
+class PostMixin:
     model = Post
     form_class = PostForm
+    template_name = 'blog/create.html'
     pk_url_kwarg = 'post_id'
 
 
-class PostAccessMixin():
+class PostAccessMixin:
 
     def dispatch(self, request, *args, **kwargs):
         post = self.get_object()
@@ -23,7 +24,10 @@ class PostAccessMixin():
         return super().dispatch(request, *args, **kwargs)
 
 
-class CommentAccessMixin():
+class CommentAccessMixin:
+    model = Comment
+    slug_field = 'comment_id'
+    pk_url_kwarg = 'comment_id'
 
     def dispatch(self, request, *args, **kwargs):
         comment = self.get_object()
