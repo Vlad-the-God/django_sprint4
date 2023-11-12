@@ -142,7 +142,7 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
         )
 
 
-class EditPostView(PostAccessMixin, LoginRequiredMixin, PostMixin, UpdateView):
+class EditPostView(LoginRequiredMixin, PostAccessMixin, PostMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
@@ -155,7 +155,6 @@ class EditPostView(PostAccessMixin, LoginRequiredMixin, PostMixin, UpdateView):
 
 class EditCommentView(LoginRequiredMixin, CommentAccessMixin, UpdateView):
     form_class = CommentForm
-    template_name = 'blog/create.html'
 
 
 class DeletePostView(LoginRequiredMixin, PostAccessMixin,
@@ -169,7 +168,7 @@ class DeletePostView(LoginRequiredMixin, PostAccessMixin,
 
 
 class DeleteCommentView(LoginRequiredMixin, CommentAccessMixin, DeleteView):
-    template_name = 'blog/comment.html'
+    ...
 
 
 @login_required

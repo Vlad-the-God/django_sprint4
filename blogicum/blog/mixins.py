@@ -28,6 +28,7 @@ class CommentAccessMixin:
     model = Comment
     slug_field = 'comment_id'
     pk_url_kwarg = 'comment_id'
+    template_name = 'blog/comment.html'
 
     def dispatch(self, request, *args, **kwargs):
         comment = self.get_object()
